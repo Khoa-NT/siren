@@ -20,8 +20,13 @@ class BatchLinear(nn.Linear, MetaModule):
         bias = params.get('bias', None)
         weight = params['weight']
 
+        ### Weight has shape (out_features,in_features)
+        ### `[i for i in range(len(weight.shape) - 2)]` --> []; therefore, `*[]` is nothing
+        ### `weight.permute(*[i for i in range(len(weight.shape) - 2)], -1, -2)` = `weight.permute(-1, -2)` 
+        ### weight will swap (out_features,in_features) --> (in_features, out_features)
+        ### then matmul: input @ (in_features, out_features)
         output = input.matmul(weight.permute(*[i for i in range(len(weight.shape) - 2)], -1, -2))
-        output += bias.unsqueeze(-2)
+        output += bias.unsqueeze(-2) ### The same as: `bias.unsqueeze(0)`
         return output
 
 
