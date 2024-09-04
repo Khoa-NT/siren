@@ -250,7 +250,7 @@ def write_sdf_summary(model, model_input, gt, model_output, writer, total_steps,
     slice_coords_2d = dataio.get_mgrid(512)
 
     with torch.no_grad():
-        yz_slice_coords = torch.cat((torch.zeros_like(slice_coords_2d[:, :1]), slice_coords_2d), dim=-1)
+        yz_slice_coords = torch.cat((torch.zeros_like(slice_coords_2d[:, :1]), slice_coords_2d), dim=-1) # x=0; y,z =slice_coords_2d
         yz_slice_model_input = {'coords': yz_slice_coords.cuda()[None, ...]}
 
         yz_model_out = model(yz_slice_model_input)
@@ -258,6 +258,7 @@ def write_sdf_summary(model, model_input, gt, model_output, writer, total_steps,
         sdf_values = dataio.lin2img(sdf_values).squeeze().cpu().numpy()
         fig = make_contour_plot(sdf_values)
         writer.add_figure(prefix + 'yz_sdf_slice', fig, global_step=total_steps)
+        plt.close(fig) # plt.close()
 
         xz_slice_coords = torch.cat((slice_coords_2d[:,:1],
                                      torch.zeros_like(slice_coords_2d[:, :1]),

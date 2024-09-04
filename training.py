@@ -95,7 +95,7 @@ def train(model, train_dataloader, epochs, lr, steps_til_summary, epochs_til_che
                     optim.zero_grad()
                     train_loss.backward()
 
-                    if clip_grad:
+                    if clip_grad: ### True in train_sdf.py
                         if isinstance(clip_grad, bool):
                             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.)
                         else:

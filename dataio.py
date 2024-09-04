@@ -392,9 +392,9 @@ class PointCloud(Dataset):
         super().__init__()
 
         print("Loading point cloud")
-        point_cloud = np.genfromtxt(pointcloud_path)
+        point_cloud = np.genfromtxt(pointcloud_path) # shape (n_points, 6)
         print("Finished loading point cloud")
-
+    
         coords = point_cloud[:, :3]
         self.normals = point_cloud[:, 3:]
 
@@ -402,39 +402,53 @@ class PointCloud(Dataset):
         # sample efficiency)
         coords -= np.mean(coords, axis=0, keepdims=True)
         if keep_aspect_ratio:
+            ### Flatten and find max & min values.
+            ### Scale by 1 max and 1 min keep the ratio of x,y,z.
             coord_max = np.amax(coords)
             coord_min = np.amin(coords)
         else:
+            ### Find the max values of x,y,z
+            ### if we scale by these values, the x,y,z are distorted.
             coord_max = np.amax(coords, axis=0, keepdims=True)
             coord_min = np.amin(coords, axis=0, keepdims=True)
 
         self.coords = (coords - coord_min) / (coord_max - coord_min)
         self.coords -= 0.5
         self.coords *= 2.
-
+        
+        ### on_surface_points is batch_size
         self.on_surface_points = on_surface_points
 
     def __len__(self):
+        ### They use batch_size=1 in DataLoader
+        ### And calculate the number of iteration in one epoch.
         return self.coords.shape[0] // self.on_surface_points
 
     def __getitem__(self, idx):
         point_cloud_size = self.coords.shape[0]
 
+        ### Their sample has 2 parts: on_surface & off_surface
+        ### The total sample is 2*batch_size
         off_surface_samples = self.on_surface_points  # **2
         total_samples = self.on_surface_points + off_surface_samples
-
+        
+        ## ------ on_surface ------ ##
         # Random coords
         rand_idcs = np.random.choice(point_cloud_size, size=self.on_surface_points)
 
         on_surface_coords = self.coords[rand_idcs, :]
         on_surface_normals = self.normals[rand_idcs, :]
 
+        ## ------ off_surface ------ ##
         off_surface_coords = np.random.uniform(-1, 1, size=(off_surface_samples, 3))
         off_surface_normals = np.ones((off_surface_samples, 3)) * -1
-
+        
+        ### Create sdf values for all sampled coordinates which contains on-surface (0) and off-surface (-1)
         sdf = np.zeros((total_samples, 1))  # on-surface = 0
         sdf[self.on_surface_points:, :] = -1  # off-surface = -1
-
+        
+        ## ------ Sampled data ------ ##
+        ### concate the on_surface & off_surface
         coords = np.concatenate((on_surface_coords, off_surface_coords), axis=0)
         normals = np.concatenate((on_surface_normals, off_surface_normals), axis=0)
 

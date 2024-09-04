@@ -1,5 +1,7 @@
 '''Reproduces Sec. 4.2 in main paper and Sec. 4 in Supplement.
 '''
+import matplotlib
+matplotlib.use('Agg') 
 
 # Enable import from parent package
 import sys
@@ -21,10 +23,10 @@ p.add_argument('--experiment_name', type=str, required=True,
 # General training options
 p.add_argument('--batch_size', type=int, default=1400)
 p.add_argument('--lr', type=float, default=1e-4, help='learning rate. default=5e-5')
-p.add_argument('--num_epochs', type=int, default=10000,
+p.add_argument('--num_epochs', type=int, default=1_000_000, # 10000
                help='Number of epochs to train for.')
 
-p.add_argument('--epochs_til_ckpt', type=int, default=1,
+p.add_argument('--epochs_til_ckpt', type=int, default=100, # 1
                help='Time interval in seconds until checkpoint is saved.')
 p.add_argument('--steps_til_summary', type=int, default=100,
                help='Time interval in seconds until tensorboard summary is saved.')
@@ -39,6 +41,9 @@ opt = p.parse_args()
 
 
 sdf_dataset = dataio.PointCloud(opt.point_cloud_path, on_surface_points=opt.batch_size)
+
+### They use batch_size=1 in DataLoader
+### And calculate the number of iteration in one epoch in dataio.PointCloud as len().
 dataloader = DataLoader(sdf_dataset, shuffle=True, batch_size=1, pin_memory=True, num_workers=0)
 
 # Define the model.
