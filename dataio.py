@@ -400,8 +400,9 @@ class PointCloud(Dataset):
 
         # Reshape point cloud such that it lies in bounding box of (-1, 1) (distorts geometry, but makes for high
         # sample efficiency)
-        coords -= np.mean(coords, axis=0, keepdims=True)
-        if keep_aspect_ratio:
+        coords -= np.mean(coords, axis=0, keepdims=True) ### Translate to origin
+
+        if keep_aspect_ratio: ### True in train_sdf.py
             ### Flatten and find max & min values.
             ### Scale by 1 max and 1 min keep the ratio of x,y,z.
             coord_max = np.amax(coords)
@@ -412,9 +413,9 @@ class PointCloud(Dataset):
             coord_max = np.amax(coords, axis=0, keepdims=True)
             coord_min = np.amin(coords, axis=0, keepdims=True)
 
-        self.coords = (coords - coord_min) / (coord_max - coord_min)
-        self.coords -= 0.5
-        self.coords *= 2.
+        self.coords = (coords - coord_min) / (coord_max - coord_min) ### Normalize to (0,1)
+        self.coords -= 0.5 ### Shift to (-0.5, 0.5)
+        self.coords *= 2. ### Scale to (-1, 1)
         
         ### on_surface_points is batch_size
         self.on_surface_points = on_surface_points
