@@ -53,10 +53,12 @@ def train(model, train_dataloader, epochs, lr, steps_til_summary, epochs_til_che
                 model_input = {key: value.cuda() for key, value in model_input.items()}
                 gt = {key: value.cuda() for key, value in gt.items()}
 
-                if double_precision:
+                ### False in train_sdf.py
+                if double_precision: 
                     model_input = {key: value.double() for key, value in model_input.items()}
                     gt = {key: value.double() for key, value in gt.items()}
 
+                ### False in train_sdf.py
                 if use_lbfgs:
                     def closure():
                         optim.zero_grad()
