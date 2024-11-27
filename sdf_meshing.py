@@ -129,7 +129,8 @@ def convert_sdf_samples_to_ply(
     # transform from voxel coordinates to camera coordinates
     # note x and y are flipped in the output of marching_cubes
     ### marching_cubes() use `lewiner` by default which uses left-handed coordinate system.
-    ### Therefore, the results are flipped in x and y axes.
+    ### But after test, the result seems fine.
+    ### `+ verts` is to translate the coordinates to the origin.
     mesh_points = np.zeros_like(verts)
     mesh_points[:, 0] = voxel_grid_origin[0] + verts[:, 0]
     mesh_points[:, 1] = voxel_grid_origin[1] + verts[:, 1]
