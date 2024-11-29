@@ -423,6 +423,7 @@ class PointCloud(Dataset):
     def __len__(self):
         ### They use batch_size=1 in DataLoader
         ### And calculate the number of iteration in one epoch.
+        ### Both SIREN and HyperDiffusion use this calculation.
         return self.coords.shape[0] // self.on_surface_points
 
     def __getitem__(self, idx):

@@ -22,10 +22,14 @@ def create_mesh(
 
     decoder.eval()
 
-    # NOTE: the voxel_origin is actually the (bottom, left, down) corner, not the middle
-    voxel_origin = [-1, -1, -1] ### Define the bottom-left-down corner of the sampling grid
-    voxel_size = 2.0 / (N - 1) ### Calculate size of each voxel to span [-1, 1] in each dimension
+    # NOTE from SIREN: the voxel_origin is actually the (bottom, left, down) corner, not the middle
+    ### Khoa: voxel_origin is the lowest values of each axis.
+    voxel_origin = [-1, -1, -1]
 
+    ### Calculate size of each voxel to span [-1, 1] in each dimension
+    voxel_size = 2.0 / (N - 1)
+
+    ### ------------------------------- Create a 3D grid of points ------------------------------- ###
     overall_index = torch.arange(0, N ** 3, 1, out=torch.LongTensor()) ### Create a tensor of indices
     samples = torch.zeros(N ** 3, 4) ### 4th column will store SDF values
 
