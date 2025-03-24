@@ -122,7 +122,11 @@ class FCBlock(MetaModule):
 
 
 class SingleBVPNet(MetaModule):
-    '''A canonical representation network for a BVP.'''
+    '''
+    A canonical representation network for a BVP.
+
+    Boundary value problems (BVPs)
+    '''
 
     def __init__(self, out_features=1, type='sine', in_features=2,
                  mode='mlp', hidden_features=256, num_hidden_layers=3, **kwargs):

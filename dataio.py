@@ -665,9 +665,11 @@ class Implicit3DWrapper(torch.utils.data.Dataset):
             sidelength = 3 * (sidelength,)
 
         self.dataset = dataset
-        self.mgrid = get_mgrid(sidelength, dim=3)
+        self.mgrid = get_mgrid(sidelength, dim=3) ### shape: (self.shape[0] * self.shape[1] * self.shape[2], 3)
+
+        ### self.dataset[0] is the video. Normalize the video to [-1, 1]
         data = (torch.from_numpy(self.dataset[0]) - 0.5) / 0.5
-        self.data = data.view(-1, self.dataset.channels)
+        self.data = data.view(-1, self.dataset.channels) ### shape: (self.shape[0] * self.shape[1] * self.shape[2], self.dataset.channels)
         self.sample_fraction = sample_fraction
         self.N_samples = int(self.sample_fraction * self.mgrid.shape[0])
 
@@ -676,7 +678,7 @@ class Implicit3DWrapper(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
         if self.sample_fraction < 1.:
-            coord_idx = torch.randint(0, self.data.shape[0], (self.N_samples,))
+            coord_idx = torch.randint(0, self.data.shape[0], (self.N_samples,)) ### Sample N_samples random coordinates
             data = self.data[coord_idx, :]
             coords = self.mgrid[coord_idx, :]
         else:
