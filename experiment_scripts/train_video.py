@@ -25,7 +25,9 @@ p.add_argument('--lr', type=float, default=1e-4, help='learning rate. default=1e
 p.add_argument('--num_epochs', type=int, default=100000, 
                help='Number of epochs to train for.')
             ### From the paper: 100,000 iterations with 15 hours on NVIDIA Titan X (Pascal) GPUs with 12 GB.
-
+            ### cat video: 300 frames, 512×512 resolution.
+            ### The second dataset: 250 frames, 272×640 pixels.
+            
 p.add_argument('--epochs_til_ckpt', type=int, default=1000,
                help='Time interval in seconds until checkpoint is saved.')
 p.add_argument('--steps_til_summary', type=int, default=100,
