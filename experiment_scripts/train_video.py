@@ -22,8 +22,9 @@ p.add_argument('--experiment_name', type=str, required=True,
 # General training options
 p.add_argument('--batch_size', type=int, default=1)
 p.add_argument('--lr', type=float, default=1e-4, help='learning rate. default=1e-4')
-p.add_argument('--num_epochs', type=int, default=100000,
+p.add_argument('--num_epochs', type=int, default=100000, 
                help='Number of epochs to train for.')
+            ### From the paper: 100,000 iterations with 15 hours on NVIDIA Titan X (Pascal) GPUs with 12 GB.
 
 p.add_argument('--epochs_til_ckpt', type=int, default=1000,
                help='Time interval in seconds until checkpoint is saved.')
